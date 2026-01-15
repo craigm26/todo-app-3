@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>todo-app</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; min-height: 100vh; padding: 2rem; }
+    .container { max-width: 500px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 2rem; color: #00ff88; }
+    .input-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    input { flex: 1; padding: 0.75rem; border: none; border-radius: 8px; background: #16213e; color: #eee; font-size: 1rem; }
+    button { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; background: #00ff88; color: #1a1a2e; font-weight: bold; cursor: pointer; }
+    button:hover { background: #00cc6a; }
+    ul { list-style: none; }
+    li { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #16213e; border-radius: 8px; margin-bottom: 0.5rem; }
+    li.done span { text-decoration: line-through; opacity: 0.5; }
+    li span { flex: 1; }
+    li button { background: #ff4757; padding: 0.5rem 1rem; }
+    li button:hover { background: #ff2e44; }
+    .check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #00ff88; cursor: pointer; }
+    .check.checked { background: #00ff88; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Todo App</h1>
+    <div class="input-group">
+      <input type="text" id="input" placeholder="Add a new task..." />
+      <button onclick="addTodo()">Add</button>
+    </div>
+    <ul id="list"></ul>
+  </div>
+  <script>
+    let todos = JSON.parse(localStorage.getItem('todos') || '[]');
+    const render = () => {
+      document.getElementById('list').innerHTML = todos.map((t, i) => `
+        <li class="${t.done ? 'done' : ''}">
+          <div class="check ${t.done ? 'checked' : ''}" onclick="toggle(${i})"></div>
+          <span>${t.text}</span>
+          <button onclick="remove(${i})">Delete</button>
+        </li>
+      `).join('');
+    };
+    const save = () => { localStorage.setItem('todos', JSON.stringify(todos)); render(); };
+    const addTodo = () => {
+      const input = document.getElementById('input');
+      if (input.value.trim()) { todos.push({ text: input.value, done: false }); input.value = ''; save(); }
+    };
+    const toggle = (i) => { todos[i].done = !todos[i].done; save(); };
+    const remove = (i) => { todos.splice(i, 1); save(); };
+    document.getElementById('input').addEventListener('keypress', (e) => { if (e.key === 'Enter') addTodo(); });
+    render();
+  </script>
+</body>
+</html>
